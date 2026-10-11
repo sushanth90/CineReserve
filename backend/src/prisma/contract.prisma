@@ -1,0 +1,84 @@
+// use prisma-8
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  username  String?
+  name      String?
+  password  String
+  bookings  Booking[]
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Movie {
+  id          Int       @id @default(autoincrement())
+  title       String
+  genre       String
+  rating      String?
+  duration    String?
+  description String?
+  image       String?
+  languages   Json?
+cinemas     Json?
+  shows       Show[]
+  bookings    Booking[]
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+model Cinema {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  location  String
+  shows     Show[]
+  bookings  Booking[]
+  seats     Seat[]
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Show {
+  id        Int       @id @default(autoincrement())
+  movieId   Int
+  cinemaId  Int
+  date      String
+  time      String
+  format    String
+  movie     Movie     @relation(fields: [movieId], references: [id])
+  cinema    Cinema    @relation(fields: [cinemaId], references: [id])
+  bookings  Booking[]
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Seat {
+  id        Int       @id @default(autoincrement())
+  cinemaId  Int
+  seatNumber String
+  cinema    Cinema    @relation(fields: [cinemaId], references: [id])
+  bookings  Booking[]
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([cinemaId, seatNumber])
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  bookingId   String    @unique
+  userId      Int?
+  movieId     Int
+  cinemaId    Int
+  showId      Int
+  seatId      Int
+  totalAmount Float
+  status      String    @default("CONFIRMED")
+  user        User?     @relation(fields: [userId], references: [id])
+  movie       Movie     @relation(fields: [movieId], references: [id])
+  cinema      Cinema    @relation(fields: [cinemaId], references: [id])
+  show        Show      @relation(fields: [showId], references: [id])
+  seat        Seat      @relation(fields: [seatId], references: [id])
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}

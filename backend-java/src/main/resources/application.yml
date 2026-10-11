@@ -1,0 +1,36 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: cinereserve-backend
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/cinereserve}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:sushanth}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      pool-name: CineReserveHikariCP
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none # Strictly prevents Hibernate from modifying existing tables
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl # Preserves exact casing of existing PostgreSQL tables and columns
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:cinereserve-secure-production-ready-jwt-secret-key-32-bytes-minimum}
+    expiration-ms: 86400000 # 24 hours

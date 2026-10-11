@@ -1,0 +1,180 @@
+import { db } from "./src/prisma/db";
+
+const movies = [
+  {
+    title: "Doctor Strange",
+    genre: "Action",
+    rating: "7.5",
+    duration: "1h 55m",
+    description: "A brilliant surgeon discovers the mystic arts.",
+    image: "/movies/doctor-strange.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Iron Man",
+    genre: "Action",
+    rating: "7.9",
+    duration: "2h 6m",
+    description: "Tony Stark builds a powerful armored suit.",
+    image: "/movies/iron-man.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Thor: Ragnarok",
+    genre: "Action",
+    rating: "7.9",
+    duration: "2h 10m",
+    description: "Thor faces a powerful new threat.",
+    image: "/movies/thor.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Spider-Man: No Way Home",
+    genre: "Action",
+    rating: "8.2",
+    duration: "2h 28m",
+    description: "Spider-Man faces villains from different worlds.",
+    image: "/movies/spider-man.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Black Panther",
+    genre: "Action",
+    rating: "7.3",
+    duration: "2h 14m",
+    description: "A new king protects Wakanda.",
+    image: "/movies/black-panther.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Guardians of the Galaxy",
+    genre: "Adventure",
+    rating: "8.0",
+    duration: "2h 1m",
+    description: "A group of heroes protects the galaxy.",
+    image: "/movies/guardians-of-the-galaxy.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Ant-Man",
+    genre: "Adventure",
+    rating: "7.2",
+    duration: "1h 57m",
+    description: "A thief becomes a superhero with a shrinking suit.",
+    image: "/movies/ant-man.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Avengers: Infinity War",
+    genre: "Action",
+    rating: "8.4",
+    duration: "2h 29m",
+    description: "The Avengers battle Thanos.",
+    image: "/movies/avengers-infinity-war.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Avengers: Endgame",
+    genre: "Action",
+    rating: "8.4",
+    duration: "3h 2m",
+    description: "The Avengers attempt to undo the snap.",
+    image: "/movies/Avengers-Endgame.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Interstellar",
+    genre: "Sci-Fi",
+    rating: "8.7",
+    duration: "2h 49m",
+    description: "Explorers travel through space searching for a new home.",
+    image: "/movies/interstellar.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "The Dark Knight",
+    genre: "Action",
+    rating: "9.0",
+    duration: "2h 32m",
+    description: "Batman faces the Joker.",
+    image: "/movies/the-dark-knight.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Cinema Night",
+    genre: "Drama",
+    rating: "7.5",
+    duration: "2h",
+    description: "An unforgettable night at the cinema.",
+    image: "/movies/cinema-night.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "The Last Journey",
+    genre: "Drama",
+    rating: "7.6",
+    duration: "2h 10m",
+    description: "A powerful emotional journey.",
+    image: "/movies/the-last-journey.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Midnight City",
+    genre: "Thriller",
+    rating: "7.8",
+    duration: "2h 5m",
+    description: "A mysterious story unfolds in the city at midnight.",
+    image: "/movies/midnight-city.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "Beyond Earth",
+    genre: "Sci-Fi",
+    rating: "8.1",
+    duration: "2h 20m",
+    description: "An expedition travels beyond Earth.",
+    image: "/movies/beyond-earth.jpeg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+  {
+    title: "The Adventure",
+    genre: "Adventure",
+    rating: "7.7",
+    duration: "2h 15m",
+    description: "A thrilling adventure begins.",
+    image: "/movies/the-adventure.jpg",
+    languages: ["English", "Hindi", "Telugu"],
+    cinemas: ["AMB Cinemas", "PVR Atrium", "PVR Preston", "PVR Inorbit"],
+  },
+];
+
+async function main() {
+  for (const movie of movies) {
+    await db.orm.public.Movie
+      .where({
+        id: movies.indexOf(movie) + 1,
+      })
+      .update(movie);
+  }
+
+  console.log("Movies updated successfully!");
+}
+
+main().catch((error) => {
+  console.error(error);
+});
