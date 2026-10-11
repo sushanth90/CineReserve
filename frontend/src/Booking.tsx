@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "./api";
+import { getRouteParams, navigate } from "./nav";
 
 const rows = ["A", "B", "C", "D", "E", "F", "G"];
 
@@ -9,7 +10,7 @@ function Booking() {
   const [selectedFood, setSelectedFood] = useState<
   { name: string; price: number }[]
 >([]);
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
 
 const bookingDate = params.get("date") || "Not selected";
 const bookingTime = params.get("time") || "Not selected";
@@ -268,15 +269,16 @@ const grandTotal = totalPrice + foodTotal;
       : "Continue to payment"
   }
   onClick={() => {
-    window.location.href =
-      `/payment?movie=${encodeURIComponent(bookingMovie)}` +
-      `&cinema=${encodeURIComponent(bookingCinema)}` +
-      `&date=${encodeURIComponent(bookingDate)}` +
-      `&time=${encodeURIComponent(selectedTime)}` +
-      `&seats=${encodeURIComponent(selectedSeats.join(","))}` +
-      `&format=${encodeURIComponent(bookingFormat)}` +
-      `&foodTotal=${encodeURIComponent(foodTotal)}` +
-      `&location=${encodeURIComponent(bookingLocation)}`;
+    navigate("/payment", {
+      movie: bookingMovie,
+      cinema: bookingCinema,
+      date: bookingDate,
+      time: selectedTime,
+      seats: selectedSeats.join(","),
+      format: bookingFormat,
+      foodTotal: String(foodTotal),
+      location: bookingLocation,
+    });
   }}
 >
   Continue to Payment →

@@ -1,6 +1,8 @@
 import { QRCodeSVG } from "qrcode.react";
+import { getRouteParams, navigate } from "./nav";
+
 function Confirmation() {
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
 
   const movie = params.get("movie") || "Movie";
   const cinema = params.get("cinema") || "Cinema";
@@ -93,15 +95,14 @@ sessionStorage.setItem("bookingId", bookingId);
             <strong>{bookingId}</strong>
           </div>
 <div className="qr-placeholder">
- <QRCodeSVG
-
-value={`${window.location.origin}/ticket?bookingId=${encodeURIComponent(bookingId)}&movie=${encodeURIComponent(movie)}&cinema=${encodeURIComponent(cinema)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}&seats=${encodeURIComponent(seats)}&format=${encodeURIComponent(format)}&total=${encodeURIComponent(totalAmount)}`}
-  size={200}
-  level="H"
-  marginSize={2}
-  bgColor="#ffffff"
-  fgColor="#000000"
-/>
+  <QRCodeSVG
+    value={`${window.location.origin}${window.location.pathname}#/ticket?bookingId=${encodeURIComponent(bookingId)}&movie=${encodeURIComponent(movie)}&cinema=${encodeURIComponent(cinema)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}&seats=${encodeURIComponent(seats)}&format=${encodeURIComponent(format)}&total=${encodeURIComponent(totalAmount)}`}
+    size={200}
+    level="H"
+    marginSize={2}
+    bgColor="#ffffff"
+    fgColor="#000000"
+  />
 
   <span>Scan for Ticket Details</span>
 </div>
@@ -111,7 +112,7 @@ value={`${window.location.origin}/ticket?bookingId=${encodeURIComponent(bookingI
         <button
           className="home-button"
           onClick={() => {
-            window.location.href = "/";
+            navigate("/");
           }}
         >
           Back to Home →

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Movies from "./Movies";
 import Booking from "./Booking";
@@ -11,7 +11,8 @@ import Chatbot from "./Chatbot";
 import Login from "./Login";
 import MyBookings from "./MyBookings";
 import Navbar from "./Navbar";
-const movies = [
+import { getAssetUrl, getCurrentRoute, navigate } from "./nav";
+const rawMovies = [
   {
     title: "Doctor Strange",
     genre: "Sci-Fi",
@@ -121,8 +122,9 @@ const movies = [
     image: "/movies/cinema-night.jpeg",
   },
 ];
+const movies = rawMovies.map((m) => ({ ...m, image: getAssetUrl(m.image) }));
 
-const nowShowing = [
+const rawNowShowing = [
   {
     title: "The Last Journey",
     genre: "Drama",
@@ -147,9 +149,8 @@ const nowShowing = [
     image:
       "/movies/the-adventure.jpg",
   },
-
-
 ];
+const nowShowing = rawNowShowing.map((m) => ({ ...m, image: getAssetUrl(m.image) }));
 
 const nearbyTheatres = [
   {
@@ -177,7 +178,7 @@ const nearbyTheatres = [
     rating: "4.2",
   },
 ];
-const recommendedMovies = [
+const rawRecommendedMovies = [
 {
   title: "Doctor Strange",
   genre: "Action",
@@ -292,15 +293,31 @@ reason: "Because you enjoy Adventure movies",
       "/movies/the-adventure.jpg",
   },
 ];
+const recommendedMovies = rawRecommendedMovies.map((m) => ({ ...m, image: getAssetUrl(m.image) }));
+
 function App() {
+  const [currentRoute, setCurrentRoute] = useState(getCurrentRoute());
   const [user, setUser] = useState(() => {
-  const savedUser = sessionStorage.getItem("user");
-  return savedUser ? JSON.parse(savedUser) : null;
-});
- const handleLogout = () => {
+    const savedUser = sessionStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setCurrentRoute(getCurrentRoute());
+    };
+    window.addEventListener("hashchange", handleRouteChange);
+    window.addEventListener("popstate", handleRouteChange);
+    return () => {
+      window.removeEventListener("hashchange", handleRouteChange);
+      window.removeEventListener("popstate", handleRouteChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
     sessionStorage.removeItem("user");
     setUser(null);
-    window.location.href = "/";
+    navigate("/");
   };
   const [currentMovie, setCurrentMovie] = useState(0);
 const [location, setLocation] = useState("");
@@ -360,75 +377,75 @@ const filteredRecommendations =
   };
 
   const movie = movies[currentMovie];
- if (window.location.pathname === "/login") {
-  return <Login />;
-}
-if (window.location.pathname === "/my-bookings") {
-  if (!user) {
-    window.location.href = "/login";
-    return null;
+  if (currentRoute === "/login") {
+    return <Login />;
+  }
+  if (currentRoute === "/my-bookings") {
+    if (!user) {
+      navigate("/login");
+      return null;
+    }
+
+    return (
+      <>
+        <Navbar user={user} onLogout={handleLogout} />
+        <MyBookings />
+      </>
+    );
   }
 
-  return (
-    <>
-      <Navbar user={user} onLogout={handleLogout} />
-      <MyBookings />
-    </>
-  );
-}
+  if (currentRoute === "/movies") {
+    return (
+      <>
+        <Navbar user={user} onLogout={handleLogout} />
+        <Movies />
+      </>
+    );
+  }
+  if (currentRoute === "/booking") {
+    if (!user) {
+      navigate("/login");
+      return null;
+    }
 
-if (window.location.pathname === "/movies") {
-  return (
-    <>
-      <Navbar user={user} onLogout={handleLogout} />
-      <Movies />
-    </>
-  );
-}
-if (window.location.pathname === "/booking") {
-  if (!user) {
-    window.location.href = "/login";
-    return null;
+    return <Booking />;
+  }
+  if (currentRoute === "/payment") {
+    if (!user) {
+      navigate("/login");
+      return null;
+    }
+
+    return <Payment />;
+  }
+  if (currentRoute === "/confirmation") {
+    if (!user) {
+      navigate("/login");
+      return null;
+    }
+
+    return <Confirmation />;
   }
 
-  return <Booking />;
-}
-if (window.location.pathname === "/payment") {
-  if (!user) {
-    window.location.href = "/login";
-    return null;
+  if (currentRoute === "/ticket") {
+    return <Ticket />;
   }
-
-  return <Payment />;
-}
-if (window.location.pathname === "/confirmation") {
-  if (!user) {
-    window.location.href = "/login";
-    return null;
+  if (currentRoute === "/about") {
+    return (
+      <>
+        <Navbar user={user} onLogout={handleLogout} />
+        <About />
+      </>
+    );
   }
-
-  return <Confirmation />;
-}
-
-if (window.location.pathname === "/ticket") {
-  return <Ticket />;
-}
-if (window.location.pathname === "/about") {
-  return (
-    <>
-      <Navbar user={user} onLogout={handleLogout} />
-      <About />
-    </>
-  );
-}
-if (window.location.pathname === "/contact") {
-  return (
-    <>
-      <Navbar user={user} onLogout={handleLogout} />
-      <Contact />
-    </>
-  );
-}
+  if (currentRoute === "/contact") {
+    return (
+      <>
+        <Navbar user={user} onLogout={handleLogout} />
+        <Contact />
+      </>
+    );
+  }
 
   return (
     <div className="app">
@@ -494,15 +511,14 @@ if (window.location.pathname === "/contact") {
     if (!savedUser) {
       sessionStorage.setItem(
         "loginRedirect",
-        `/movies?movie=${encodeURIComponent(movie.title)}`
+        `#/movies?movie=${encodeURIComponent(movie.title)}`
       );
 
-      window.location.href = "/login";
+      navigate("/login");
       return;
     }
 
-    window.location.href =
-      `/movies?movie=${encodeURIComponent(movie.title)}`;
+    navigate("/movies", { movie: movie.title });
   }}
 >
   Reserve Your Seat
@@ -596,7 +612,7 @@ if (window.location.pathname === "/contact") {
 
     <button
   onClick={() => {
-    window.location.href = "/movies";
+    navigate("/movies");
   }}
 >
   Find Shows →
@@ -626,7 +642,6 @@ if (window.location.pathname === "/contact") {
     <div className="theatre-grid">
 
       {nearbyTheatres.map((theatre) => (
-
         <div className="theatre-card" key={theatre.name}>
 
           <div className="theatre-icon">
@@ -646,8 +661,7 @@ if (window.location.pathname === "/contact") {
 
            <button
   onClick={() => {
-    window.location.href =
-      `/movies?cinema=${encodeURIComponent(theatre.name)}`;
+    navigate("/movies", { cinema: theatre.name });
   }}
 >
   View Shows →
@@ -680,7 +694,7 @@ if (window.location.pathname === "/contact") {
           <button
   className="view-all"
   onClick={() => {
-    window.location.href = "/movies";
+    navigate("/movies");
   }}
 >
   View All Movies →
@@ -708,8 +722,7 @@ if (window.location.pathname === "/contact") {
 
   trackMovieInterest(item.genre);
 
-  window.location.href =
-    `/movies?movie=${encodeURIComponent(item.title)}`;
+  navigate("/movies", { movie: item.title });
 }}
   >
     Book Now
@@ -799,8 +812,7 @@ if (window.location.pathname === "/contact") {
                    onClick={() => {
   trackMovieInterest(item.genre);
 
-  window.location.href =
-    `/movies?movie=${encodeURIComponent(item.title)}`;
+  navigate("/movies", { movie: item.title });
 }}
                   >
                     Book Now

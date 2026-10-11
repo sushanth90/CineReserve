@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { API_BASE_URL, getAuthHeaders } from "./api";
+import { getRouteParams, navigate } from "./nav";
 
 function Payment() {
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
 
   const movie = params.get("movie") || "Movie";
   const cinema = params.get("cinema") || "Cinema";
@@ -56,8 +57,8 @@ if (!/^\d{3,4}$/.test(cvv)) {
 const savedUser = sessionStorage.getItem("user");
 
 if (!savedUser) {
-  sessionStorage.setItem("loginRedirect", window.location.pathname + window.location.search);
-  window.location.href = "/login";
+  sessionStorage.setItem("loginRedirect", window.location.hash || window.location.pathname);
+  navigate("/login");
   return;
 }
 
@@ -89,17 +90,18 @@ try {
     return;
   }
 
- window.location.href =
-  `/confirmation?bookingId=${encodeURIComponent(bookingId)}` +
-  `&movie=${encodeURIComponent(movie)}` +
-  `&cinema=${encodeURIComponent(cinema)}` +
-  `&date=${encodeURIComponent(date)}` +
-  `&time=${encodeURIComponent(time)}` +
-  `&seats=${encodeURIComponent(seats)}` +
-  `&format=${encodeURIComponent(format)}` +
-  `&foodTotal=${encodeURIComponent(foodTotal)}` +
-  `&total=${encodeURIComponent(totalAmount)}` +
-  `&location=${encodeURIComponent(location)}`;
+  navigate("/confirmation", {
+    bookingId,
+    movie,
+    cinema,
+    date,
+    time,
+    seats,
+    format,
+    foodTotal: String(foodTotal),
+    total: String(totalAmount),
+    location,
+  });
 } catch (error) {
   console.error("Booking error:", error);
   alert("Unable to connect to the booking server.");

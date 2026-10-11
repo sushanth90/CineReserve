@@ -1,3 +1,4 @@
+import { getCurrentRoute, getRouteHref, navigate } from "./nav";
 
 type NavbarProps = {
   user: { name?: string } | null;
@@ -5,11 +6,19 @@ type NavbarProps = {
 };
 
 export default function Navbar({ user, onLogout }: NavbarProps) {
-  const currentPath = window.location.pathname;
+  const currentPath = getCurrentRoute();
 
   return (
     <header className="navbar">
-      <a className="brand" href="/" style={{ textDecoration: "none", color: "inherit" }}>
+      <a
+        className="brand"
+        href={getRouteHref("/")}
+        onClick={(e) => {
+          e.preventDefault();
+          navigate("/");
+        }}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <div className="brand-icon">C</div>
         <div>
           <h2>CineReserve</h2>
@@ -18,22 +27,54 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
       </a>
 
       <nav className="nav-links">
-        <a className={currentPath === "/" ? "active" : ""} href="/">
+        <a
+          className={currentPath === "/" ? "active" : ""}
+          href={getRouteHref("/")}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/");
+          }}
+        >
           Home
         </a>
-        <a className={currentPath === "/movies" ? "active" : ""} href="/movies">
+        <a
+          className={currentPath === "/movies" ? "active" : ""}
+          href={getRouteHref("/movies")}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/movies");
+          }}
+        >
           Movies
         </a>
         <a
           className={currentPath === "/my-bookings" ? "active" : ""}
-          href="/my-bookings"
+          href={getRouteHref("/my-bookings")}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/my-bookings");
+          }}
         >
           My Bookings
         </a>
-        <a className={currentPath === "/about" ? "active" : ""} href="/about">
+        <a
+          className={currentPath === "/about" ? "active" : ""}
+          href={getRouteHref("/about")}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/about");
+          }}
+        >
           About
         </a>
-        <a className={currentPath === "/contact" ? "active" : ""} href="/contact">
+        <a
+          className={currentPath === "/contact" ? "active" : ""}
+          href={getRouteHref("/contact")}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/contact");
+          }}
+        >
           Contact
         </a>
       </nav>
@@ -57,8 +98,8 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
         <button
           className="login-button"
           onClick={() => {
-            sessionStorage.setItem("loginRedirect", window.location.pathname);
-            window.location.href = "/login";
+            sessionStorage.setItem("loginRedirect", window.location.hash || window.location.pathname);
+            navigate("/login");
           }}
         >
           Sign In

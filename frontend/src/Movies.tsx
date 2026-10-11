@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "./api";
+import { getAssetUrl, getRouteParams, navigate } from "./nav";
 
 const cinemaLocations: Record<string, string> = {
   "AMB Cinemas": "Gachibowli, Hyderabad",
@@ -9,7 +10,7 @@ const cinemaLocations: Record<string, string> = {
   "ALLU Cinemas": "Kukatpally, Hyderabad",
 };
 
-const movies = [
+const rawMovies = [
   {
     title: "Doctor Strange",
     genre: "Sci-Fi",
@@ -155,11 +156,12 @@ const movies = [
     image: "/movies/the-adventure.jpg",
   },
 ];
+const movies = rawMovies.map((m) => ({ ...m, image: getAssetUrl(m.image) }));
 
 function Movies() {
-  const params = new URLSearchParams(window.location.search);
-const movieFromHome = params.get("movie");
-const cinemaFromHome = params.get("cinema");
+  const params = getRouteParams();
+  const movieFromHome = params.get("movie");
+  const cinemaFromHome = params.get("cinema");
 
 const [dbMovies, setDbMovies] = useState<any[]>([]);
 const [dbShows, setDbShows] = useState<any[]>([]);
@@ -193,7 +195,9 @@ useEffect(() => {
     .then((response) => response.json())
     .then((data) => {
       console.log("Movies from backend:", data);
-      setDbMovies(data);
+      if (Array.isArray(data)) {
+        setDbMovies(data.map((m: any) => ({ ...m, image: getAssetUrl(m.image) })));
+      }
     })
     .catch((error) => {
       console.error("Error fetching movies:", error);
@@ -408,14 +412,15 @@ localStorage.setItem(
 // 7. All required selections are complete
 const location = cinemaLocations[selectedCinema];
 
-  window.location.href =
-    `/booking?movie=${encodeURIComponent(movie.title)}` +
-    `&language=${encodeURIComponent(selectedLanguage)}` +
-    `&cinema=${encodeURIComponent(selectedCinema)}` +
-    `&date=${encodeURIComponent(selectedDate)}` +
-    `&time=${encodeURIComponent(selectedShowtime)}` +
-    `&format=${encodeURIComponent(selectedFormat)}` +
-    `&location=${encodeURIComponent(location)}`;
+  navigate("/booking", {
+    movie: movie.title,
+    language: selectedLanguage,
+    cinema: selectedCinema,
+    date: selectedDate,
+    time: selectedShowtime,
+    format: selectedFormat,
+    location: location || "",
+  });
 };
 
   return (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "./api";
+import { getRouteParams } from "./nav";
 
 type TicketDetails = {
   bookingId: string;
@@ -15,7 +16,7 @@ type TicketDetails = {
 };
 
 function Ticket() {
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
   const bookingId = params.get("bookingId") || "";
 
   const [status, setStatus] = useState("Loading ticket details...");

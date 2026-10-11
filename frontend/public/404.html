@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CineReserve</title>
+    <script>
+      // GitHub Pages SPA router fallback
+      // Converts any direct deep URL (e.g. /CineReserve/movies) to /CineReserve/#/movies
+      var path = window.location.pathname;
+      var repo = "/CineReserve";
+      if (path.indexOf(repo) === 0) {
+        var route = path.substring(repo.length);
+        if (!route || route === "/") {
+          window.location.replace(repo + "/");
+        } else {
+          if (route.charAt(0) !== "/") route = "/" + route;
+          var search = window.location.search || "";
+          window.location.replace(repo + "/#" + route + search);
+        }
+      } else {
+        window.location.replace(repo + "/");
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

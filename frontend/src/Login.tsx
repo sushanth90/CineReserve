@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API_BASE_URL } from "./api";
+import { navigate } from "./nav";
 
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -70,7 +71,13 @@ setTimeout(() => {
 
   sessionStorage.removeItem("loginRedirect");
 
-  window.location.href = redirectPath;
+  if (redirectPath.startsWith("#/")) {
+    window.location.hash = redirectPath;
+  } else if (redirectPath.startsWith("/")) {
+    navigate(redirectPath);
+  } else {
+    navigate("/");
+  }
 }, 500);
     }
   } catch (error) {
@@ -99,7 +106,7 @@ setTimeout(() => {
       <button
         type="button"
         onClick={() => {
-          window.location.href = "/";
+          navigate("/");
         }}
         style={styles.backButton}
       >
